@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Cauca-Popayan-Mapa</title>
+    <link rel="stylesheet" href="jquery-jvectormap-2.0.5.css" type="text/css" media="screen" />
+    <script src="jquery-3.6.0.min.js"></script>
+    <script src="jquery-jvectormap-2.0.5.min.js"></script>
+    <script src="jquery.vmap.popayan.js"></script>
+    <script src="jquery.vmap.cauca.js"></script>
+    <script src="jquery.vmap.cauca2.js"></script>
+    <script src="jquery.vmap.narino.js"></script>
+</head>
+
+<body>
+    <h1>Popayán</h1>
+    <div id="popayan_map" style="width: 600px; height: 400px"></div>
+    <h1>Cauca</h1>
+    <button type="button" id="cargar-colores">Cargar Colores</button>
+    <div id="cauca_map" style="width: 600px; height: 400px"></div>
+    <h1>Cauca2</h1>
+    <div id="cauca_map2" style="width: 600px; height: 400px"></div>
+    <h1>Nariño</h1>
+    <div id="narino_map" style="width: 600px; height: 400px"></div>
+    <script>
+        $(document).ready(function () {
+            var gdpData = {
+                "popayan": 16.63,
+                "quintana": 11.58,
+                "poblazon": 158.97,
+                "sanBernardo": 200.97,
+            };
+            $('#popayan_map').vectorMap({
+                map: 'popayan_en',
+                series: {
+                    regions: [{
+                        values: gdpData,
+                        scale: ['#C8EEFF', '#0071A4'],
+                        normalizeFunction: 'polynomial'
+                    }]
+                },
+                onRegionTipShow: function (e, el, code) {
+                    el.html(el.html() + ' (GDP - ' + gdpData[code] + ')');
+                }
+            });
+            var palette = ['#66C2A5', '#FC8D62', '#8DA0CB', '#E78AC3', '#A6D854', '#FAA', '#FFA', '#AFA'];
+            generateColors = function () {
+                var colors = {},
+                    key;
+
+                for (key in map.regions) {
+                    colors[key] = palette[Math.floor(Math.random() * palette.length)];
+                }
+                return colors;
+            },
+                //map;
+
+                map = new jvm.Map({
+                    map: 'cauca_en',
+                    onRegionClick: function (event, code) {
+                        alert("Event: " + event + "\nCode: " + code);
+                    },
+                    container: $('#cauca_map'),
+                    series: {
+                        regions: [{
+                            attribute: 'fill'
+                        }]
+                    }
+                });
+            map.series.regions[0].setValues(generateColors());
+            $('#cargar-colores').click(function (e) {
+                e.preventDefault();
+                map.series.regions[0].setValues(generateColors());
+            });
+            $('#cauca_map2').vectorMap({ map: 'cauca_en2' });
+            $('#narino_map').vectorMap({ map: 'narino_en' });
+        });
+    </script>
+</body>
+
+</html>
